@@ -1,24 +1,70 @@
-import { Injectable } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { DBService } from 'src/db/db.service';
+import { Artist } from 'src/interfaces/artist.interface';
+import { CreateArtistDto } from './dto/create-artist.dto';
+import { UpdateArtistDto } from './dto/update-artist.dto';
 
 @Injectable()
 export class ArtistService {
-  getArtists(): string {
-    return 'Hello Artist!';
+  constructor(private readonly dbService: DBService) {}
+
+  getArtists(): Artist[] {
+    return this.dbService.artists;
   }
 
-  getArtist(id): string {
-    return `Hello ${id}`;
-  }
+  getArtist(id: string): Artist {
+    const artist = this.dbService.artists.find((artist) => artist.id === id);
 
-  createArtist(artist) {
+    if (!artist) {
+      throw new NotFoundException();
+    }
+
     return artist;
   }
 
-  updateArtist(id, artist) {
+  createArtist({ name, grammy }: CreateArtistDto): Artist {
+    const newArtist: Artist = {
+      id: uuidv4(),
+      name,
+      grammy,
+    };
+
+    this.dbService.artists.push(newArtist);
+
+    return newArtist;
+  }
+
+  updateArtist(id: string, { name, grammy }: UpdateArtistDto) {
+    const artist = this.dbService.artists.find((artist) => artist.id === id);
+
+    if (!artist) {
+      throw new NotFoundException();
+    }
+
+    artist.name = name ?? artist.name;
+    artist.grammy = grammy ?? artist.grammy;
+
     return artist;
   }
 
-  deleteArtist(id) {
-    return id;
+  deleteArtist(id: string) {
+    const artist = this.dbService.artists.find((artist) => artist.id === id);
+
+    if (!artist) {
+      throw new NotFoundException();
+    }
+
+    this.dbService.albums.forEach((album) => {
+      if (album.artistId === id) album.artistId = null;
+    });
+
+    this.dbService.tracks.forEach((track) => {
+      if (track.artistId === id) track.artistId = null;
+    });
+
+    this.dbService.artists = this.dbService.artists.filter(
+      (artist) => artist.id !== id,
+    );
   }
 }

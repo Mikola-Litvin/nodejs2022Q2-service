@@ -4,43 +4,58 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Put,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
+import { validate as uuidValidate } from 'uuid';
+import { User } from 'src/interfaces/user.interface';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Controller('/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  // @HttpCode(200)
-  getUsers() {
+  getUsers(): User[] {
     return this.userService.getUsers();
   }
 
   @Get(':id')
-  // @HttpCode(200)
-  getUser(@Param('id') id) {
+  getUser(@Param('id') id: string): User {
+    if (!uuidValidate(id))
+      throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
     return this.userService.getUser(id);
   }
 
+  @UsePipes(new ValidationPipe())
   @Post()
-  // @HttpCode(201)
-  createUser(@Body() user) {
+  createUser(@Body() user: CreateUserDto): User {
     return this.userService.createUser(user);
   }
 
+  @UsePipes(new ValidationPipe())
   @Put(':id')
-  // @HttpCode(200)
-  updateUser(@Param('id') id, @Body() user) {
-    return this.userService.updateUser(id, user);
+  updateUser(
+    @Param('id') id: string,
+    @Body() passwords: UpdatePasswordDto,
+  ): User {
+    if (!uuidValidate(id))
+      throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
+    return this.userService.updateUser(id, passwords);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  deleteUser(@Param('id') id) {
-    return this.userService.deleteUser(id);
+  deleteUser(@Param('id') id: string): void {
+    if (!uuidValidate(id))
+      throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
+    this.userService.deleteUser(id);
   }
 }
