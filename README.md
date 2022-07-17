@@ -8,7 +8,7 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/Mikola-Litvin/nodejs2022Q2-service.git
 ```
 
 ## Installing NPM modules
@@ -70,3 +70,5 @@ npm run format
 Press <kbd>F5</kbd> to debug.
 
 For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+
+In order to test the API, you can use web version of Postman - https://web.postman.co/, which is very easy to use.

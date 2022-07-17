@@ -63,6 +63,10 @@ export class ArtistService {
       if (track.artistId === id) track.artistId = null;
     });
 
+    this.dbService.favorites.artists = this.dbService.favorites.artists.filter(
+      (artistId) => artistId !== id,
+    );
+
     this.dbService.artists = this.dbService.artists.filter(
       (artist) => artist.id !== id,
     );

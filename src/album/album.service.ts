@@ -64,6 +64,10 @@ export class AlbumService {
       if (track.albumId === id) track.albumId = null;
     });
 
+    this.dbService.favorites.albums = this.dbService.favorites.albums.filter(
+      (albumId) => albumId !== id,
+    );
+
     this.dbService.albums = this.dbService.albums.filter(
       (album) => album.id !== id,
     );

@@ -45,7 +45,7 @@ export class UserService {
       password,
       version: 1,
       createdAt: new Date().getTime(),
-      updatedAt: null,
+      updatedAt: new Date().getTime(),
     };
 
     this.dbService.users.push(newUser);

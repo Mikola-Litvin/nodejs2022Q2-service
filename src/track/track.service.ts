@@ -66,6 +66,10 @@ export class TrackService {
       throw new NotFoundException();
     }
 
+    this.dbService.favorites.tracks = this.dbService.favorites.tracks.filter(
+      (trackId) => trackId !== id,
+    );
+
     this.dbService.tracks = this.dbService.tracks.filter(
       (track) => track.id !== id,
     );
