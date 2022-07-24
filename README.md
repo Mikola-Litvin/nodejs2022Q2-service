@@ -4,6 +4,9 @@
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+- In order to test the API, you can use web version of Postman - https://web.postman.co/, which is very easy to use.
+- For correct working docker compose, running Docker Desktop is necessary.
+
 
 ## Downloading
 
@@ -70,5 +73,3 @@ npm run format
 Press <kbd>F5</kbd> to debug.
 
 For more information, visit: https://code.visualstudio.com/docs/editor/debugging
-
-In order to test the API, you can use web version of Postman - https://web.postman.co/, which is very easy to use.
