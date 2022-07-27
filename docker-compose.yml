@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   main:
-    container_name: hl-sevice
+    container_name: hl-service
     restart: always
     build:
       context: .
