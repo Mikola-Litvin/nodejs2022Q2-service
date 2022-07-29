@@ -5,11 +5,18 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DBService } from 'src/db/db.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { FavoritesRepsonse } from 'src/interfaces/favorites.interface';
+import { FavoritesEntity } from './entities/favorites.entity';
 
 @Injectable()
 export class FavoritesService {
-  constructor(private readonly dbService: DBService) {}
+  constructor(
+    private readonly dbService: DBService,
+    @InjectRepository(FavoritesEntity)
+    private userRepo: Repository<FavoritesEntity>,
+  ) {}
 
   getFavorites(): FavoritesRepsonse {
     const artists = this.dbService.favorites.artists.map((artistId) => {

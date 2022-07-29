@@ -1,13 +1,20 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DBService } from 'src/db/db.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Album } from 'src/interfaces/album.interface';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
+import { AlbumEntity } from './entities/album.entity';
 
 @Injectable()
 export class AlbumService {
-  constructor(private readonly dbService: DBService) {}
+  constructor(
+    private readonly dbService: DBService,
+    @InjectRepository(AlbumEntity)
+    private userRepo: Repository<AlbumEntity>,
+  ) {}
 
   getAlbums(): Album[] {
     return this.dbService.albums;
