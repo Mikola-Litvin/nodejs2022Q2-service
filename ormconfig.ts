@@ -8,8 +8,8 @@ export default {
   username: process.env.TYPEORM_USERNAME as string,
   password: process.env.TYPEORM_PASSWORD as string,
   database: process.env.TYPEORM_DATABASE as string,
+  entities: ['dist/src/**/*.entity.js'],
   synchronize: false,
-  entities: ['dist/**/entities/*.entity.js'],
-  migrations: ['dist/**/migration/*.js'],
+  migrations: ['dist/src/migrations/*.js'],
   migrationsRun: true,
 } as DataSourceOptions;
