@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -23,36 +24,46 @@ export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
   @Get()
-  getTracks() {
-    return this.trackService.getTracks();
+  async getTracks(): Promise<Track[]> {
+    return await this.trackService.getTracks();
   }
 
   @Get(':id')
-  getTrack(@Param('id') id: string): Track {
+  async getTrack(@Param('id') id: string): Promise<Track> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    return this.trackService.getTrack(id);
+
+    const track = await this.trackService.getTrack(id);
+
+    if (!track) {
+      throw new NotFoundException();
+    }
+
+    return track;
   }
 
   @UsePipes(new ValidationPipe())
   @Post()
-  createTrack(@Body() track: CreateTrackDto): Track {
-    return this.trackService.createTrack(track);
+  async createTrack(@Body() track: CreateTrackDto): Promise<Track> {
+    return await this.trackService.createTrack(track);
   }
 
   @UsePipes(new ValidationPipe())
   @Put(':id')
-  updateTrack(@Param('id') id: string, @Body() track: UpdateTrackDto): Track {
+  async updateTrack(
+    @Param('id') id: string,
+    @Body() track: UpdateTrackDto,
+  ): Promise<Track> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    return this.trackService.updateTrack(id, track);
+    return await this.trackService.updateTrack(id, track);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  deleteTrack(@Param('id') id: string): void {
+  async deleteTrack(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    this.trackService.deleteTrack(id);
+    await this.trackService.deleteTrack(id);
   }
 }

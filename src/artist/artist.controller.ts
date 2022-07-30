@@ -23,36 +23,39 @@ export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 
   @Get()
-  getArtists(): Artist[] {
-    return this.artistService.getArtists();
+  async getArtists(): Promise<Artist[]> {
+    return await this.artistService.getArtists();
   }
 
   @Get(':id')
-  getArtist(@Param('id') id: string): Artist {
+  async getArtist(@Param('id') id: string): Promise<Artist> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    return this.artistService.getArtist(id);
+    return await this.artistService.getArtist(id);
   }
 
   @UsePipes(new ValidationPipe())
   @Post()
-  createArtist(@Body() artist: CreateArtistDto) {
-    return this.artistService.createArtist(artist);
+  async createArtist(@Body() artist: CreateArtistDto): Promise<Artist> {
+    return await this.artistService.createArtist(artist);
   }
 
   @UsePipes(new ValidationPipe())
   @Put(':id')
-  updateArtist(@Param('id') id: string, @Body() artist: UpdateArtistDto) {
+  async updateArtist(
+    @Param('id') id: string,
+    @Body() artist: UpdateArtistDto,
+  ): Promise<Artist> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    return this.artistService.updateArtist(id, artist);
+    return await this.artistService.updateArtist(id, artist);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  deleteArtist(@Param('id') id: string): void {
+  async deleteArtist(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    this.artistService.deleteArtist(id);
+    await this.artistService.deleteArtist(id);
   }
 }

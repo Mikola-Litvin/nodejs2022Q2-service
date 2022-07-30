@@ -39,13 +39,14 @@ export class UserService {
       id: uuidv4(),
       login,
       password,
-      version: 1,
-      createdAt: new Date().getTime(),
-      updatedAt: new Date().getTime(),
     };
     const createdUser = this.userRepo.create(newUser);
 
-    return (await this.userRepo.save(createdUser)).toResponse() as User;
+    const result = (await this.userRepo.save(createdUser)).toResponse() as User;
+    result.createdAt = new Date(result.createdAt).getTime();
+    result.updatedAt = new Date(result.updatedAt).getTime();
+
+    return result;
   }
 
   async updateUser(
@@ -63,10 +64,12 @@ export class UserService {
     }
 
     user.password = newPassword;
-    user.version = user.version + 1;
-    user.updatedAt = new Date().getTime();
 
-    return (await this.userRepo.save(user)).toResponse() as User;
+    const result = (await this.userRepo.save(user)).toResponse() as User;
+    result.createdAt = new Date(result.createdAt).getTime();
+    result.updatedAt = new Date(result.updatedAt).getTime();
+
+    return result;
   }
 
   async deleteUser(id: string): Promise<void> {

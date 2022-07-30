@@ -5,12 +5,21 @@ export class FavoritesEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  artists: string;
+  @Column({
+    type: 'simple-array',
+    array: true,
+  })
+  artists;
 
-  @Column()
-  albums: string;
+  @Column({
+    type: 'simple-array',
+    array: true,
+  })
+  albums;
 
-  @Column()
-  tracks: string;
+  @Column({
+    type: 'simple-array',
+    array: true,
+  })
+  tracks;
 }

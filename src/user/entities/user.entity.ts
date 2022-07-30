@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  VersionColumn,
+} from 'typeorm';
 
 @Entity('users')
 export class UserEntity {
@@ -11,13 +18,16 @@ export class UserEntity {
   @Column()
   password: string;
 
-  @Column()
+  // @Column()
+  @VersionColumn()
   version: number;
 
-  @Column()
+  // @Column('bigint')
+  @CreateDateColumn()
   createdAt: number;
 
-  @Column()
+  // @Column('bigint')
+  @UpdateDateColumn()
   updatedAt: number;
 
   toResponse() {

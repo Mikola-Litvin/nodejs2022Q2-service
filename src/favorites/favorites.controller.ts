@@ -17,52 +17,52 @@ export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
   @Get()
-  getFavorites(): FavoritesRepsonse {
-    return this.favoritesService.getFavorites();
+  async getFavorites(): Promise<FavoritesRepsonse> {
+    return await this.favoritesService.getFavorites();
   }
 
   @Post('/track/:id')
-  addTrack(@Param('id') id: string) {
+  async addTrack(@Param('id') id: string): Promise<{ message: string }> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    return this.favoritesService.addTrack(id);
+    return await this.favoritesService.addTrack(id);
   }
 
   @Delete('/track/:id')
   @HttpCode(204)
-  deleteTrack(@Param('id') id: string): void {
+  async deleteTrack(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    this.favoritesService.deleteTrack(id);
+    await this.favoritesService.deleteTrack(id);
   }
 
   @Post('/album/:id')
-  addAlbum(@Param('id') id: string) {
+  async addAlbum(@Param('id') id: string): Promise<{ message: string }> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    return this.favoritesService.addAlbum(id);
+    return await this.favoritesService.addAlbum(id);
   }
 
   @Delete('/album/:id')
   @HttpCode(204)
-  deleteAlbum(@Param('id') id: string): void {
+  async deleteAlbum(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    this.favoritesService.deleteAlbum(id);
+    await this.favoritesService.deleteAlbum(id);
   }
 
   @Post('/artist/:id')
-  addArtist(@Param('id') id: string) {
+  async addArtist(@Param('id') id: string): Promise<{ message: string }> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    return this.favoritesService.addArtist(id);
+    return await this.favoritesService.addArtist(id);
   }
 
   @Delete('/artist/:id')
   @HttpCode(204)
-  deleteArtist(@Param('id') id: string): void {
+  async deleteArtist(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    return this.favoritesService.deleteArtist(id);
+    await this.favoritesService.deleteArtist(id);
   }
 }

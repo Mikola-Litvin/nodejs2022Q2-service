@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DBService } from 'src/db/db.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Track } from 'src/interfaces/track.interface';
@@ -11,26 +10,24 @@ import { TrackEntity } from './entities/track.entity';
 @Injectable()
 export class TrackService {
   constructor(
-    private readonly dbService: DBService,
     @InjectRepository(TrackEntity)
     private userRepo: Repository<TrackEntity>,
   ) {}
 
-  getTracks(): Track[] {
-    return this.dbService.tracks;
+  async getTracks(): Promise<Track[]> {
+    return await this.userRepo.find();
   }
 
-  getTrack(id: string): Track {
-    const track = this.dbService.tracks.find((track) => track.id === id);
-
-    if (!track) {
-      throw new NotFoundException();
-    }
-
-    return track;
+  async getTrack(id: string): Promise<Track> {
+    return await this.userRepo.findOne({ where: { id: id } });
   }
 
-  createTrack({ name, duration, artistId, albumId }: CreateTrackDto): Track {
+  async createTrack({
+    name,
+    duration,
+    artistId,
+    albumId,
+  }: CreateTrackDto): Promise<Track> {
     const newTrack: Track = {
       id: uuidv4(),
       name,
@@ -39,16 +36,16 @@ export class TrackService {
       albumId: albumId ?? null,
     };
 
-    this.dbService.tracks.push(newTrack);
+    const createdTrack = this.userRepo.create(newTrack);
 
-    return newTrack;
+    return await this.userRepo.save(createdTrack);
   }
 
-  updateTrack(
+  async updateTrack(
     id,
     { name, duration, artistId, albumId }: UpdateTrackDto,
-  ): Track {
-    const track = this.dbService.tracks.find((track) => track.id === id);
+  ): Promise<Track> {
+    const track = await this.userRepo.findOne({ where: { id: id } });
 
     if (!track) {
       throw new NotFoundException();
@@ -63,22 +60,18 @@ export class TrackService {
     track.artistId = newArtistId;
     track.albumId = newAlbumId;
 
-    return track;
+    return await this.userRepo.save(track);
   }
 
-  deleteTrack(id): void {
-    const track = this.dbService.tracks.find((track) => track.id === id);
+  async deleteTrack(id): Promise<void> {
+    // this.dbService.favorites.tracks = this.dbService.favorites.tracks.filter(
+    //   (trackId) => trackId !== id,
+    // );
 
-    if (!track) {
+    const result = await this.userRepo.delete(id);
+
+    if (!result.affected) {
       throw new NotFoundException();
     }
-
-    this.dbService.favorites.tracks = this.dbService.favorites.tracks.filter(
-      (trackId) => trackId !== id,
-    );
-
-    this.dbService.tracks = this.dbService.tracks.filter(
-      (track) => track.id !== id,
-    );
   }
 }

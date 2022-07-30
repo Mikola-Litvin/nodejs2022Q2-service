@@ -11,9 +11,13 @@ export class TrackEntity {
   @Column()
   duration: number;
 
-  @Column()
-  artistId: string;
+  @Column({
+    nullable: true,
+  })
+  artistId: string | null;
 
-  @Column()
-  albumId: string;
+  @Column({
+    nullable: true,
+  })
+  albumId: string | null;
 }

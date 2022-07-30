@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -23,36 +24,46 @@ export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Get()
-  getAlbums(): Album[] {
-    return this.albumService.getAlbums();
+  async getAlbums(): Promise<Album[]> {
+    return await this.albumService.getAlbums();
   }
 
   @Get(':id')
-  getAlbum(@Param('id') id: string): Album {
+  async getAlbum(@Param('id') id: string): Promise<Album> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    return this.albumService.getAlbum(id);
+
+    const album = await this.albumService.getAlbum(id);
+
+    if (!album) {
+      throw new NotFoundException();
+    }
+
+    return album;
   }
 
   @UsePipes(new ValidationPipe())
   @Post()
-  createAlbum(@Body() album: CreateAlbumDto): Album {
-    return this.albumService.createAlbum(album);
+  async createAlbum(@Body() album: CreateAlbumDto): Promise<Album> {
+    return await this.albumService.createAlbum(album);
   }
 
   @UsePipes(new ValidationPipe())
   @Put(':id')
-  updateAlbum(@Param('id') id: string, @Body() album: UpdateAlbumDto): Album {
+  async updateAlbum(
+    @Param('id') id: string,
+    @Body() album: UpdateAlbumDto,
+  ): Promise<Album> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    return this.albumService.updateAlbum(id, album);
+    return await this.albumService.updateAlbum(id, album);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  deleteAlbum(@Param('id') id: string): void {
+  async deleteAlbum(@Param('id') id: string): Promise<void> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    this.albumService.deleteAlbum(id);
+    await this.albumService.deleteAlbum(id);
   }
 }
