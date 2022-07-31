@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -31,7 +32,13 @@ export class ArtistController {
   async getArtist(@Param('id') id: string): Promise<Artist> {
     if (!uuidValidate(id))
       throw new HttpException('Id is not UUID', HttpStatus.BAD_REQUEST);
-    return await this.artistService.getArtist(id);
+
+    const artist = await this.artistService.getArtist(id);
+
+    if (!artist) {
+      throw new NotFoundException();
+    }
+    return artist;
   }
 
   @UsePipes(new ValidationPipe())

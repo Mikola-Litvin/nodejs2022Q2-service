@@ -64,10 +64,6 @@ export class TrackService {
   }
 
   async deleteTrack(id): Promise<void> {
-    // this.dbService.favorites.tracks = this.dbService.favorites.tracks.filter(
-    //   (trackId) => trackId !== id,
-    // );
-
     const result = await this.userRepo.delete(id);
 
     if (!result.affected) {

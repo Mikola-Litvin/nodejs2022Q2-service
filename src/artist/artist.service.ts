@@ -31,13 +31,7 @@ export class ArtistService {
   }
 
   async getArtist(id: string): Promise<Artist> {
-    const artist = await this.userRepo.findOne({ where: { id: id } });
-
-    if (!artist) {
-      throw new NotFoundException();
-    }
-
-    return artist;
+    return await this.userRepo.findOne({ where: { id: id } });
   }
 
   async createArtist({ name, grammy }: CreateArtistDto): Promise<Artist> {
