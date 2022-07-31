@@ -3,9 +3,9 @@ import { Artist } from './artist.interface';
 import { Track } from './track.interface';
 
 export interface FavoritesRepsonse {
-  artists: Artist[];
-  albums: Album[];
-  tracks: Track[];
+  artists?: Artist[];
+  albums?: Album[];
+  tracks?: Track[];
 }
 
 export interface Favorites {

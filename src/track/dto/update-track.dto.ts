@@ -4,20 +4,20 @@ export class UpdateTrackDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name?: string;
 
   @IsOptional()
   @IsInt()
   @IsNotEmpty()
-  duration: number;
+  duration?: number;
 
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  artistId: string | null;
+  artistId?: string | null;
 
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  albumId: string | null;
+  albumId?: string | null;
 }
