@@ -1,29 +1,30 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DBService } from 'src/db/db.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { TrackService } from 'src/track/track.service';
 import { Album } from 'src/interfaces/album.interface';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
+import { AlbumEntity } from './entities/album.entity';
 
 @Injectable()
 export class AlbumService {
-  constructor(private readonly dbService: DBService) {}
+  constructor(
+    private readonly trackService: TrackService,
+    @InjectRepository(AlbumEntity)
+    private userRepo: Repository<AlbumEntity>,
+  ) {}
 
-  getAlbums(): Album[] {
-    return this.dbService.albums;
+  async getAlbums(): Promise<Album[]> {
+    return await this.userRepo.find();
   }
 
-  getAlbum(id: string): Album {
-    const album = this.dbService.albums.find((album) => album.id === id);
-
-    if (!album) {
-      throw new NotFoundException();
-    }
-
-    return album;
+  async getAlbum(id: string): Promise<Album> {
+    return await this.userRepo.findOne({ where: { id: id } });
   }
 
-  createAlbum({ name, year, artistId }: CreateAlbumDto): Album {
+  async createAlbum({ name, year, artistId }: CreateAlbumDto): Promise<Album> {
     const newAlbum: Album = {
       id: uuidv4(),
       name,
@@ -31,13 +32,16 @@ export class AlbumService {
       artistId: artistId ?? null,
     };
 
-    this.dbService.albums.push(newAlbum);
+    const createdAlbum = this.userRepo.create(newAlbum);
 
-    return newAlbum;
+    return await this.userRepo.save(createdAlbum);
   }
 
-  updateAlbum(id: string, { name, year, artistId }: UpdateAlbumDto): Album {
-    const album = this.dbService.albums.find((album) => album.id === id);
+  async updateAlbum(
+    id: string,
+    { name, year, artistId }: UpdateAlbumDto,
+  ): Promise<Album> {
+    const album = await this.userRepo.findOne({ where: { id: id } });
 
     if (!album) {
       throw new NotFoundException();
@@ -50,26 +54,20 @@ export class AlbumService {
     album.year = year ?? album.year;
     album.artistId = newArtistId;
 
-    return album;
+    return await this.userRepo.save(album);
   }
 
-  deleteAlbum(id: string): void {
-    const album = this.dbService.albums.find((album) => album.id === id);
+  async deleteAlbum(id: string): Promise<void> {
+    const result = await this.userRepo.delete(id);
 
-    if (!album) {
+    if (!result.affected) {
       throw new NotFoundException();
     }
 
-    this.dbService.tracks.forEach((track) => {
-      if (track.albumId === id) track.albumId = null;
+    const tracks = await this.trackService.getTracks();
+    tracks.forEach(({ id: trackId, albumId }) => {
+      if (albumId === id)
+        this.trackService.updateTrack(trackId, { albumId: null });
     });
-
-    this.dbService.favorites.albums = this.dbService.favorites.albums.filter(
-      (albumId) => albumId !== id,
-    );
-
-    this.dbService.albums = this.dbService.albums.filter(
-      (album) => album.id !== id,
-    );
   }
 }
