@@ -8,11 +8,13 @@ import { FavoritesModule } from './favorites/favorites.module';
 import { TrackModule } from './track/track.module';
 import { UserModule } from './user/user.module';
 import ormConfig from '../ormconfig';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     AlbumModule,
     ArtistModule,
+    AuthModule,
     FavoritesModule,
     TrackModule,
     UserModule,

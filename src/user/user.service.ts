@@ -34,6 +34,10 @@ export class UserService {
     return user.toResponse() as User;
   }
 
+  async getUserByLogin(login: string): Promise<User> {
+    return await this.userRepo.findOne({ where: { login: login } });
+  }
+
   async createUser({ login, password }: CreateUserDto): Promise<User> {
     const newUser: User = {
       id: uuidv4(),
