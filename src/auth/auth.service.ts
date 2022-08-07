@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
 
@@ -16,7 +17,7 @@ export class AuthService {
   }: CreateUserDto): Promise<{ [key: string]: string }> {
     const user = await this.userService.getUserByLogin(login);
 
-    if (!user || user.password !== password) {
+    if (!user || !bcrypt.compareSync(password, user.password)) {
       throw new ForbiddenException();
     }
 
@@ -26,7 +27,13 @@ export class AuthService {
   async signUpUser(
     userData: CreateUserDto,
   ): Promise<{ [key: string]: string }> {
-    const signedUpUser = await this.userService.createUser(userData);
+    const saltRounds = 10;
+    const hash = bcrypt.hashSync(userData.password, saltRounds);
+
+    const signedUpUser = await this.userService.createUser({
+      ...userData,
+      password: hash,
+    });
 
     if (signedUpUser?.login !== userData.login) {
       return {
