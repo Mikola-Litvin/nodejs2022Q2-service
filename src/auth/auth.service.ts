@@ -1,15 +1,15 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private jwtService: JwtService,
+  ) {}
 
   async login({
     login,
@@ -21,7 +21,10 @@ export class AuthService {
       throw new ForbiddenException();
     }
 
-    return { jwt: 'token' };
+    const payload = { username: user.login, sub: user.id };
+    return {
+      jwt: this.jwtService.sign(payload),
+    };
   }
 
   async signUpUser(
